@@ -1,5 +1,3 @@
-import { Kv } from "https://deno.land/x/deno_kv@v0.1.0/mod.ts";
-
 export interface Link {
   id: string;
   originalUrl: string;
@@ -8,11 +6,15 @@ export interface Link {
 }
 
 class LinkService {
-  private kv: Kv;
+  private kv: Deno.Kv | null = null;
 
   constructor() {
     // Initialize Deno KV
-    this.kv = new Kv("./kv.db");
+    this.initKv();
+  }
+
+  private async initKv() {
+    this.kv = await Deno.openKv();
   }
 
   // Generate a unique short ID
@@ -27,6 +29,11 @@ class LinkService {
 
   // Create a new short link
   async createLink(originalUrl: string): Promise<Link> {
+    // Wait for KV to be initialized
+    while (!this.kv) {
+      await new Promise(resolve => setTimeout(resolve, 10));
+    }
+    
     const id = this.generateShortId();
     const link: Link = {
       id,
@@ -42,12 +49,22 @@ class LinkService {
 
   // Get a link by ID
   async getLink(id: string): Promise<Link | null> {
+    // Wait for KV to be initialized
+    while (!this.kv) {
+      await new Promise(resolve => setTimeout(resolve, 10));
+    }
+    
     const entry = await this.kv.get<Link>(["links", id]);
-    return entry?.value || null;
+    return entry.value || null;
   }
 
   // Update click count
   async incrementClicks(id: string): Promise<void> {
+    // Wait for KV to be initialized
+    while (!this.kv) {
+      await new Promise(resolve => setTimeout(resolve, 10));
+    }
+    
     const link = await this.getLink(id);
     if (link) {
       link.clicks += 1;
@@ -57,17 +74,35 @@ class LinkService {
 
   // Delete a link
   async deleteLink(id: string): Promise<void> {
+    // Wait for KV to be initialized
+    while (!this.kv) {
+      await new Promise(resolve => setTimeout(resolve, 10));
+    }
+    
     await this.kv.delete(["links", id]);
   }
 
   // Get all links (for dashboard)
   async getAllLinks(): Promise<Link[]> {
+    // Wait for KV to be initialized
+    while (!this.kv) {
+      await new Promise(resolve => setTimeout(resolve, 10));
+    }
+    
     const links: Link[] = [];
-    const entries = await this.kv.list<Link>({ prefix: ["links"] });
+    const entries = this.kv.list<Link>({ prefix: ["links"] });
     for await (const entry of entries) {
       links.push(entry.value);
     }
     return links;
+  }
+  
+  // Close the KV connection
+  close() {
+    if (this.kv) {
+      this.kv.close();
+      this.kv = null;
+    }
   }
 }
 

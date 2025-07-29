@@ -5,9 +5,13 @@
 import * as $_404 from "./routes/_404.tsx";
 import * as $_app from "./routes/_app.tsx";
 import * as $api_joke from "./routes/api/joke.ts";
+import * as $dashboard_index from "./routes/dashboard/index.tsx";
 import * as $greet_name_ from "./routes/greet/[name].tsx";
 import * as $index from "./routes/index.tsx";
+import * as $s_id_ from "./routes/s/[id].tsx";
+import * as $CopyButton from "./islands/CopyButton.tsx";
 import * as $Counter from "./islands/Counter.tsx";
+import * as $DashboardLink from "./islands/DashboardLink.tsx";
 import type { Manifest } from "$fresh/server.ts";
 
 const manifest = {
@@ -15,11 +19,15 @@ const manifest = {
     "./routes/_404.tsx": $_404,
     "./routes/_app.tsx": $_app,
     "./routes/api/joke.ts": $api_joke,
+    "./routes/dashboard/index.tsx": $dashboard_index,
     "./routes/greet/[name].tsx": $greet_name_,
     "./routes/index.tsx": $index,
+    "./routes/s/[id].tsx": $s_id_,
   },
   islands: {
+    "./islands/CopyButton.tsx": $CopyButton,
     "./islands/Counter.tsx": $Counter,
+    "./islands/DashboardLink.tsx": $DashboardLink,
   },
   baseUrl: import.meta.url,
 } satisfies Manifest;
