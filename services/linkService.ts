@@ -82,6 +82,70 @@ class LinkService {
     await this.kv.delete(["links", id]);
   }
 
+  // Update a link's ID
+  async updateLinkId(oldId: string, newId: string): Promise<Link | null> {
+    // Wait for KV to be initialized
+    while (!this.kv) {
+      await new Promise(resolve => setTimeout(resolve, 10));
+    }
+    
+    // Check if the new ID is already taken
+    const existingLink = await this.getLink(newId);
+    if (existingLink) {
+      throw new Error("Link ID already exists");
+    }
+    
+    // Get the existing link
+    const link = await this.getLink(oldId);
+    if (!link) {
+      return null;
+    }
+    
+    // Create updated link with new ID
+    const updatedLink: Link = {
+      ...link,
+      id: newId
+    };
+    
+    // Delete the old link and save the new one
+    await this.kv.delete(["links", oldId]);
+    await this.kv.set(["links", newId], updatedLink);
+    
+    return updatedLink;
+  }
+
+  // Update a link's original URL
+  async updateLinkUrl(id: string, newUrl: string): Promise<Link | null> {
+    // Wait for KV to be initialized
+    while (!this.kv) {
+      await new Promise(resolve => setTimeout(resolve, 10));
+    }
+    
+    // Get the existing link
+    const link = await this.getLink(id);
+    if (!link) {
+      return null;
+    }
+    
+    // Validate URL format
+    try {
+      new URL(newUrl);
+    } catch (_error) {
+      throw new Error("Invalid URL format");
+    }
+    
+    // Create updated link with new URL
+    const updatedLink: Link = {
+      ...link,
+      originalUrl: newUrl
+    };
+    
+    // Save the updated link
+    await this.kv.set(["links", id], updatedLink);
+    
+    return updatedLink;
+  }
+
   // Get all links (for dashboard)
   async getAllLinks(): Promise<Link[]> {
     // Wait for KV to be initialized

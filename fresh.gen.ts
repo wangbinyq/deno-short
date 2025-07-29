@@ -12,6 +12,8 @@ import * as $s_id_ from "./routes/s/[id].tsx";
 import * as $CopyButton from "./islands/CopyButton.tsx";
 import * as $Counter from "./islands/Counter.tsx";
 import * as $DashboardLink from "./islands/DashboardLink.tsx";
+import * as $IdEditor from "./islands/IdEditor.tsx";
+import * as $UrlEditor from "./islands/UrlEditor.tsx";
 import type { Manifest } from "$fresh/server.ts";
 
 const manifest = {
@@ -28,6 +30,8 @@ const manifest = {
     "./islands/CopyButton.tsx": $CopyButton,
     "./islands/Counter.tsx": $Counter,
     "./islands/DashboardLink.tsx": $DashboardLink,
+    "./islands/IdEditor.tsx": $IdEditor,
+    "./islands/UrlEditor.tsx": $UrlEditor,
   },
   baseUrl: import.meta.url,
 } satisfies Manifest;

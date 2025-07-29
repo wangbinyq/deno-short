@@ -1,11 +1,15 @@
 import { Head } from "$fresh/runtime.ts";
 import { Handlers, PageProps } from "$fresh/server.ts";
 import linkService, { Link } from "../../services/linkService.ts";
+import IdEditor from "../../islands/IdEditor.tsx";
+import UrlEditor from "../../islands/UrlEditor.tsx";
 
 interface Data {
   links?: Link[];
   error?: string;
   authenticated?: boolean;
+  updateError?: string;
+  updateSuccess?: string;
 }
 
 export const handler: Handlers<Data> = {
@@ -50,6 +54,58 @@ export const handler: Handlers<Data> = {
     
     if (action === "delete" && id) {
       await linkService.deleteLink(id);
+    } else if (action === "updateId" && id) {
+      const newId = formData.get("newId")?.toString().trim();
+      
+      if (newId && newId !== id) {
+        try {
+          const updatedLink = await linkService.updateLinkId(id, newId);
+          if (!updatedLink) {
+            return ctx.render({ 
+              links: await linkService.getAllLinks(), 
+              authenticated: true, 
+              updateError: "Link not found" 
+            });
+          }
+          return ctx.render({ 
+            links: await linkService.getAllLinks(), 
+            authenticated: true, 
+            updateSuccess: `Link ID updated successfully to /s/${newId}` 
+          });
+        } catch (error) {
+          return ctx.render({ 
+            links: await linkService.getAllLinks(), 
+            authenticated: true, 
+            updateError: (error as Error).message 
+          });
+        }
+      }
+    } else if (action === "updateUrl" && id) {
+      const newUrl = formData.get("newUrl")?.toString().trim();
+      
+      if (newUrl) {
+        try {
+          const updatedLink = await linkService.updateLinkUrl(id, newUrl);
+          if (!updatedLink) {
+            return ctx.render({ 
+              links: await linkService.getAllLinks(), 
+              authenticated: true, 
+              updateError: "Link not found" 
+            });
+          }
+          return ctx.render({ 
+            links: await linkService.getAllLinks(), 
+            authenticated: true, 
+            updateSuccess: `Link URL updated successfully` 
+          });
+        } catch (error) {
+          return ctx.render({ 
+            links: await linkService.getAllLinks(), 
+            authenticated: true, 
+            updateError: (error as Error).message 
+          });
+        }
+      }
     }
     
     // Get all links for the dashboard
@@ -60,7 +116,7 @@ export const handler: Handlers<Data> = {
 
 export default function Dashboard({ data }: PageProps<Data>) {
   // Provide default values in case data is undefined
-  const { links, error, authenticated } = data || {};
+  const { links, error, authenticated, updateError, updateSuccess } = data || {};
   
   if (error) {
     return (
@@ -144,6 +200,26 @@ export default function Dashboard({ data }: PageProps<Data>) {
             </div>
           </div>
           
+          {/* Update Success Message */}
+          {updateSuccess && (
+            <div class="mb-6 p-4 rounded-lg bg-green-50 border border-green-200 text-green-700 flex items-center">
+              <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 mr-2" viewBox="0 0 20 20" fill="currentColor">
+                <path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z" clip-rule="evenodd" />
+              </svg>
+              {updateSuccess}
+            </div>
+          )}
+          
+          {/* Update Error Message */}
+          {updateError && (
+            <div class="mb-6 p-4 rounded-lg bg-red-50 border border-red-200 text-red-700 flex items-center">
+              <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 mr-2" viewBox="0 0 20 20" fill="currentColor">
+                <path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zM8.707 7.293a1 1 0 00-1.414 1.414L8.586 10l-1.293 1.293a1 1 0 101.414 1.414L10 11.414l1.293 1.293a1 1 0 001.414-1.414L11.414 10l1.293-1.293a1 1 0 00-1.414-1.414L10 8.586 8.707 7.293z" clip-rule="evenodd" />
+              </svg>
+              {updateError}
+            </div>
+          )}
+          
           {links && links.length > 0 ? (
             <div class="bg-white rounded-2xl shadow-xl overflow-hidden transition-all duration-300 hover:shadow-2xl">
               <div class="overflow-x-auto">
@@ -170,28 +246,40 @@ export default function Dashboard({ data }: PageProps<Data>) {
                   <tbody class="bg-white divide-y divide-gray-200">
                     {links.map((link) => (
                       <tr key={link.id} class="hover:bg-gray-50 transition-colors duration-150">
-                        <td class="px-6 py-4 whitespace-nowrap">
-                          <a 
-                            href={`/s/${link.id}`} 
-                            class="inline-flex items-center text-blue-600 hover:text-blue-800 font-medium hover:underline"
-                            target="_blank"
-                            rel="noopener noreferrer"
-                          >
-                            <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4 mr-1" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 6H6a2 2 0 00-2 2v10a2 2 0 002 2h10a2 2 0 002-2v-4M14 4h6m0 0v6m0-6L10 14" />
-                            </svg>
-                            /s/{link.id}
-                          </a>
+                        <td class="px-6 py-4">
+                          <div class="flex flex-col">
+                            <a 
+                              href={`/s/${link.id}`} 
+                              class="inline-flex items-center text-blue-600 hover:text-blue-800 font-medium hover:underline"
+                              target="_blank"
+                              rel="noopener noreferrer"
+                            >
+                              <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4 mr-1" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 6H6a2 2 0 00-2 2v10a2 2 0 002 2h10a2 2 0 002-2v-4M14 4h6m0 0v6m0-6L10 14" />
+                              </svg>
+                              /s/{link.id}
+                            </a>
+                            <IdEditor 
+                              id={link.id} 
+                              currentId={link.id} 
+                            />
+                          </div>
                         </td>
                         <td class="px-6 py-4 max-w-xs">
-                          <a 
-                            href={link.originalUrl} 
-                            class="text-blue-600 hover:text-blue-800 break-all hover:underline"
-                            target="_blank"
-                            rel="noopener noreferrer"
-                          >
-                            {link.originalUrl}
-                          </a>
+                          <div class="flex flex-col">
+                            <a 
+                              href={link.originalUrl} 
+                              class="text-blue-600 hover:text-blue-800 break-all hover:underline"
+                              target="_blank"
+                              rel="noopener noreferrer"
+                            >
+                              {link.originalUrl}
+                            </a>
+                            <UrlEditor 
+                              id={link.id} 
+                              currentUrl={link.originalUrl} 
+                            />
+                          </div>
                         </td>
                         <td class="px-6 py-4 whitespace-nowrap">
                           <span class="inline-flex items-center px-3 py-1 rounded-full text-sm font-medium bg-green-100 text-green-800">
