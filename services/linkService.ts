@@ -31,13 +31,35 @@ class LinkService {
   }
 
   // Create a new short link
-  async createLink(originalUrl: string): Promise<Link> {
+  async createLink(originalUrl: string, customId?: string): Promise<Link> {
     // Wait for KV to be initialized
     while (!this.kv) {
       await new Promise((resolve) => setTimeout(resolve, 10));
     }
 
-    const id = this.generateShortId();
+    // Use custom ID if provided, otherwise generate a random one
+    let id: string;
+    if (customId) {
+      // Validate custom ID format
+      if (!/^[a-zA-Z0-9\-_]+$/.test(customId)) {
+        throw new Error(
+          "Custom path can only contain alphanumeric characters, hyphens, and underscores",
+        );
+      }
+
+      // Check if the custom ID is already taken
+      const existingLink = await this.getLink(customId);
+      if (existingLink) {
+        throw new Error(
+          "Custom path already exists, please choose another one",
+        );
+      }
+
+      id = customId;
+    } else {
+      id = this.generateShortId();
+    }
+
     const link: Link = {
       id,
       originalUrl,

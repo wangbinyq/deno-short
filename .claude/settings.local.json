@@ -10,7 +10,9 @@
       "Bash(git add:*)",
       "Bash(git commit:*)",
       "Bash(deno check:*)",
-      "Bash(rm:*)"
+      "Bash(rm:*)",
+      "Bash(deno task check:*)",
+      "Bash(deno fmt:*)"
     ],
     "deny": []
   }

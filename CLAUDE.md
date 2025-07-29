@@ -1,19 +1,24 @@
 # CLAUDE.md
 
-This file provides guidance to Claude Code (claude.ai/code) when working with code in this repository.
+This file provides guidance to Claude Code (claude.ai/code) when working with
+code in this repository.
 
 ## Project Overview
 
-This is a short link service built with Deno, Deno KV, and Deno Fresh. The service allows users to create short URLs that redirect to longer URLs, with a dashboard for managing links.
+This is a short link service built with Deno, Deno KV, and Deno Fresh. The
+service allows users to create short URLs that redirect to longer URLs, with a
+dashboard for managing links.
 
 ## Commands
 
 ### Development
+
 - `deno task start` - Start the development server with hot reloading
 - `deno task build` - Build the project for production
 - `deno task preview` - Preview the production build
 
 ### Code Quality
+
 - `deno task check` - Run formatting, linting, and type checking
 
 ## Project Structure
@@ -29,9 +34,12 @@ This is a short link service built with Deno, Deno KV, and Deno Fresh. The servi
 
 ## Key Features
 
-1. **Short Link Generation**: Users can create short links by submitting URLs on the homepage
-2. **Link Redirection**: Short links redirect to their original URLs with click tracking
-3. **Dashboard**: Admin dashboard to view and manage all links, protected by access code
+1. **Short Link Generation**: Users can create short links by submitting URLs on
+   the homepage
+2. **Link Redirection**: Short links redirect to their original URLs with click
+   tracking
+3. **Dashboard**: Admin dashboard to view and manage all links, protected by
+   access code
 4. **Data Storage**: Uses Deno KV for persistent storage of links
 
 ## Environment Variables

@@ -15,6 +15,7 @@ export const handler: Handlers<Data> = {
   async POST(req, ctx) {
     const formData = await req.formData();
     const originalUrl = formData.get("url")?.toString() || "";
+    const customPath = formData.get("customPath")?.toString().trim() || "";
 
     if (!originalUrl) {
       return ctx.render({ error: "URL is required" });
@@ -25,11 +26,11 @@ export const handler: Handlers<Data> = {
       new URL(originalUrl);
 
       // Create short link
-      const shortLink = await linkService.createLink(originalUrl);
+      const shortLink = await linkService.createLink(originalUrl, customPath);
       const shortLinkUrl = `${new URL(req.url).origin}/s/${shortLink.id}`;
       return ctx.render({ shortLink, originalUrl, shortLinkUrl });
-    } catch (_error) {
-      return ctx.render({ error: "Invalid URL format", originalUrl });
+    } catch (error) {
+      return ctx.render({ error: (error as Error).message, originalUrl });
     }
   },
 };
@@ -109,6 +110,33 @@ export default function Home({ data }: PageProps<Data>) {
                   />
                 </div>
               </div>
+
+              <div>
+                <label
+                  for="customPath"
+                  class="block text-sm font-semibold text-gray-700 mb-2"
+                >
+                  Custom Path (Optional)
+                </label>
+                <div class="relative">
+                  <div class="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
+                    <span class="text-gray-400">/s/</span>
+                  </div>
+                  <input
+                    type="text"
+                    name="customPath"
+                    id="customPath"
+                    class="w-full pl-10 pr-4 py-4 border border-gray-300 rounded-xl focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent transition duration-200 text-lg"
+                    placeholder="my-custom-path"
+                    pattern="[a-zA-Z0-9\-_]+"
+                    title="Only alphanumeric characters, hyphens, and underscores are allowed"
+                  />
+                </div>
+                <p class="mt-1 text-sm text-gray-500">
+                  Leave blank to auto-generate a random path
+                </p>
+              </div>
+
               <button
                 type="submit"
                 class="w-full bg-gradient-to-r from-blue-500 to-indigo-600 hover:from-blue-600 hover:to-indigo-700 text-white font-bold py-4 px-6 rounded-xl transition-all duration-300 transform hover:-translate-y-0.5 hover:shadow-lg text-lg"
