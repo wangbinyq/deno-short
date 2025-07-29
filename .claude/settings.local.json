@@ -1,0 +1,11 @@
+{
+  "permissions": {
+    "allow": [
+      "Bash(deno:*)",
+      "Bash(ls:*)",
+      "WebFetch(domain:docs.deno.com)",
+      "Bash(mkdir:*)"
+    ],
+    "deny": []
+  }
+}
