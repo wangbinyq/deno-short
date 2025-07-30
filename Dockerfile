@@ -13,4 +13,4 @@ RUN deno task build
 EXPOSE 8000
 
 # Run the application
-CMD ["deno", "run", "-A", "--v8-flags=--lite-mode", "main.ts"]
+CMD ["deno", "run", "-A", "--v8-flags=--jitless", "main.ts"]
