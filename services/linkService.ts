@@ -193,6 +193,17 @@ class LinkService {
       this.kv = null;
     }
   }
+
+  // Fetch content from original URL (proxy mode)
+  async fetchOriginalContent(url: string): Promise<Response> {
+    try {
+      const response = await fetch(url);
+      return response;
+    } catch (error) {
+      console.error("Error fetching original content:", error);
+      throw new Error("Failed to fetch original content");
+    }
+  }
 }
 
 export default new LinkService();
