@@ -20,13 +20,15 @@ export const handler: Handlers = {
 
       if (proxyMode) {
         // Proxy mode: fetch and return the original content
-        const response = await linkService.fetchOriginalContent(link.originalUrl);
-        
+        const response = await linkService.fetchOriginalContent(
+          link.originalUrl,
+        );
+
         // Create a new response with the original content
         const headers = new Headers(response.headers);
         // Remove content-encoding header to avoid decompression issues
         headers.delete("content-encoding");
-        
+
         return new Response(response.body, {
           status: response.status,
           headers,

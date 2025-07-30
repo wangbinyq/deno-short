@@ -12,7 +12,9 @@
       "Bash(deno check:*)",
       "Bash(rm:*)",
       "Bash(deno task check:*)",
-      "Bash(deno fmt:*)"
+      "Bash(deno fmt:*)",
+      "Bash(deno test:*)",
+      "Bash(deno lint:*)"
     ],
     "deny": []
   }
