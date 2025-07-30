@@ -1,10 +1,13 @@
 # CLAUDE.md
 
-This file provides guidance to Claude Code (claude.ai/code) when working with code in this repository.
+This file provides guidance to Claude Code (claude.ai/code) when working with
+code in this repository.
 
 ## Project Overview
 
-This is a short link service built with Deno, Deno KV, and Deno Fresh. The service allows users to create short URLs that redirect to longer URLs, with a dashboard for managing links.
+This is a short link service built with Deno, Deno KV, and Deno Fresh. The
+service allows users to create short URLs that redirect to longer URLs, with a
+dashboard for managing links.
 
 ## Commands
 
@@ -17,6 +20,12 @@ This is a short link service built with Deno, Deno KV, and Deno Fresh. The servi
 ### Code Quality
 
 - `deno task check` - Run formatting, linting, and type checking
+
+### Testing
+
+- `deno test` - Run tests
+- `deno test --allow-env services/linkService.test.ts` - Run linkService tests
+  with env access
 
 ## Project Structure
 
@@ -31,9 +40,12 @@ This is a short link service built with Deno, Deno KV, and Deno Fresh. The servi
 
 ## Key Features
 
-1. **Short Link Generation**: Users can create short links by submitting URLs on the homepage
-2. **Link Redirection**: Short links redirect to their original URLs with click tracking
-3. **Dashboard**: Admin dashboard to view and manage all links, protected by access code
+1. **Short Link Generation**: Users can create short links by submitting URLs on
+   the homepage
+2. **Link Redirection**: Short links redirect to their original URLs with click
+   tracking
+3. **Dashboard**: Admin dashboard to view and manage all links, protected by
+   access code
 4. **Data Storage**: Uses Deno KV for persistent storage of links
 5. **Custom Paths**: Users can specify custom paths for their short links
 6. **Link Management**: Edit link IDs and URLs, delete links from the dashboard
@@ -41,6 +53,7 @@ This is a short link service built with Deno, Deno KV, and Deno Fresh. The servi
 ## Environment Variables
 
 - `DASHBOARD_ACCESS_CODE` - Required access code to view the admin dashboard
+- `DENO_KV_URL` - Optional remote Deno KV URL for remote database connection
 
 ## Implementation Details
 
@@ -48,9 +61,11 @@ This is a short link service built with Deno, Deno KV, and Deno Fresh. The servi
 - Short IDs are generated using random alphanumeric characters
 - Click counts are incremented each time a short link is accessed
 - The dashboard requires an access code parameter to view (`?accesscode=CODE`)
-- Custom paths are validated to ensure they only contain alphanumeric characters, hyphens, and underscores
+- Custom paths are validated to ensure they only contain alphanumeric
+  characters, hyphens, and underscores
 - Link IDs can be updated through the dashboard interface
 - Link URLs can be updated through the dashboard interface
+- Optional remote Deno KV connection via `DENO_KV_URL` environment variable
 
 ## Architecture
 
@@ -79,11 +94,12 @@ The application follows a typical Fresh/Deno architecture:
 ## Data Model
 
 The `Link` interface defines the structure of a link:
+
 ```typescript
 interface Link {
-  id: string;           // Short link identifier
-  originalUrl: string;  // Original long URL
-  createdAt: Date;      // Creation timestamp
-  clicks: number;       // Number of times accessed
+  id: string; // Short link identifier
+  originalUrl: string; // Original long URL
+  createdAt: Date; // Creation timestamp
+  clicks: number; // Number of times accessed
 }
 ```

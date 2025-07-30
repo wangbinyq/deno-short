@@ -14,7 +14,13 @@ class LinkService {
   }
 
   private async initKv() {
-    this.kv = await Deno.openKv();
+    // Check if DENO_KV_URL environment variable is set
+    const kvUrl = Deno.env.get("DENO_KV_URL");
+    if (kvUrl) {
+      this.kv = await Deno.openKv(kvUrl);
+    } else {
+      this.kv = await Deno.openKv();
+    }
   }
 
   // Generate a unique short ID
